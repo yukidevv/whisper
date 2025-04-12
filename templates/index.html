@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>音声文字起こしツール</title>
+  <link rel="stylesheet" href="../static/app.css" />
+</head>
+<body>
+  <h1>音声文字起こしツール</h1>
+  <form id="transcribe-form">
+    <label for="url">動画のURL:</label>
+    <input type="text" id="url" name="url" placeholder="https://..." required>
+    <button type="submit">送信して文字起こし</button>
+  </form>
+
+  <h2>結果</h2>
+  <textarea id="result" readonly></textarea>
+
+  <script>
+    const form = document.getElementById("transcribe-form");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const url = document.getElementById("url").value;
+
+      result.value = "文字起こし中...しばらくお待ちください。";
+
+      const response = await fetch("/transcribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await response.json();
+      result.value = data.text || "エラーが発生しました。";
+    });
+  </script>
+</body>
+</html>
