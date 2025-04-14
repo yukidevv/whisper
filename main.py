@@ -1,20 +1,17 @@
 import whisper
 from whisper.utils import get_writer
 import yt_dlp as youtube_dl
-from flask import Flask
-from flask import render_template
+from flask import Flask,render_template,jsonify, request
+import os
 
 app = Flask(__name__)
-output_dir = 'toTxt'
-
-def url_input():
-  print("URL",end=':')
-  return input()
+#チャンネルID/動画ID.mp3
+MODEL = 'tiny'
 
 def get_ydl_otps():
   ydl_opts={
     'format': 'bestaudio/best', # 音声を出力する
-    'outtmpl': 'data/%(uploader_id)s/%(id)s.%(ext)s',  #チャンネルID/
+    'outtmpl': 'data/%(uploader_id)s/%(id)s.%(ext)s',
     'postprocessors': [{
       'key': 'FFmpegExtractAudio',
       'preferredcodec': 'mp3',
@@ -23,19 +20,33 @@ def get_ydl_otps():
   }
   return ydl_opts
 
-def exec_download_audio(url, opts):
+def exec_audio_transcribe(url, opts):
+  trans_txt = ''
   with youtube_dl.YoutubeDL(opts) as ydl:
-    ydl.download(url)
+    try:
+      info = ydl.extract_info(url, download=False)
+      downloaded_file = ydl.prepare_filename(info)
+      output_absolute_path = os.path.splitext(downloaded_file)[0] + '.mp3'
+      ydl.download(url)
+      trans_txt = speech_to_txt(output_absolute_path)
+    except Exception as e:
+      print(f"Download error: {e}")
+    return trans_txt
 
-#一旦これで
+def speech_to_txt(audio_dir):
+  print(audio_dir)
+  model = whisper.load_model(MODEL)
+  result = model.transcribe(audio_dir)
+  return result['text']
+
 @app.route("/")
 def main():
-#   url = url_input()
-#   exec_download_audio(url, get_ydl_otps())
   return render_template('index.html')
 
-#whisper
-# model = whisper.load_model("small")
-# result = model.transcribe("./data/Cu-IMFl37LA.mp3")
-# json_writer = get_writer("json", output_directory)
-# json_writer(result, input)
+@app.route("/api/v1/transcribe",methods=['POST'])
+def convert_movie_to_txt():
+  if request.method == 'POST':
+    return jsonify({"text": exec_audio_transcribe(request.json['url'], get_ydl_otps())})
+
+if __name__ == "__main__":
+  app.run(debug=True)

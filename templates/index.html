@@ -26,12 +26,11 @@
 
       result.value = "文字起こし中...しばらくお待ちください。";
 
-      const response = await fetch("/transcribe", {
+      const response = await fetch("/api/v1/transcribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url })
       });
-
       const data = await response.json();
       result.value = data.text || "エラーが発生しました。";
     });
