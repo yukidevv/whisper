@@ -10,30 +10,21 @@
   <form id="transcribe-form">
     <label for="url">動画のURL:</label>
     <input type="text" id="url" name="url" placeholder="https://..." required>
-    <button type="submit">送信して文字起こし</button>
+    <label for="model-select"></label>
+    <select name="model" id="model-select">
+      <option value="">使用するモデルを選択してください</option>
+      <option value="tiny">tiny</option>
+      <option value="base">base</option>
+      <option value="small">small</option>
+      <option value="medium">medium</option>
+      <option value="large">large</option>
+    </select>
+    <label for="submit"></label>
+    <button id="submit" type="submit">送信して文字起こし</button>
   </form>
 
   <h2>結果</h2>
   <textarea id="result" readonly></textarea>
-
-  <script>
-    const form = document.getElementById("transcribe-form");
-    const result = document.getElementById("result");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const url = document.getElementById("url").value;
-
-      result.value = "文字起こし中...しばらくお待ちください。";
-
-      const response = await fetch("/api/v1/transcribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      });
-      const data = await response.json();
-      result.value = data.text || "エラーが発生しました。";
-    });
-  </script>
 </body>
+<script src="../static/app.js" type="module"></script>  
 </html>
