@@ -1,5 +1,5 @@
 # whisper
-Youtubeのvlog系や配信系の動画をテキストだけで読みたくて作りました  
+youtubeのvlog系や配信系の動画をテキストだけで読みたくて作りました  
 youtubeの文字起こしだと全文を一気には読めないよね    
 youtubeの動画の文字起こしを行い、全文を取得します  
 今は【CPUONLY】  
@@ -8,6 +8,9 @@ youtubeの動画の文字起こしを行い、全文を取得します
 2. Whisper用のモデルを選択
 3. 実行
 4. 文字起こし結果を表示
+
+動画を見ながら字幕を付けたい？Laguage Reactorを使えばいいよね  
+> [Language Reactor](https://www.languagereactor.com/) 
 
 # 使用技術等
 - python3.12.3
